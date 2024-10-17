@@ -37,21 +37,16 @@ async def button(update: Update, context):
         await query.edit_message_text(text=f"Твой уникальный промокод: {promo_code}")
 
 # Основная функция запуска бота
-async def main():
+def main():
     application = ApplicationBuilder().token("7836847076:AAHVcgjHmMErXbyUIcqt__PpceYyHfraoi8").build()
 
     # Обработчики команд
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(button))
 
-    # Инициализация приложения
-    await application.initialize()
-
-    # Запуск бота
-    await application.start()
-    await application.idle()
+    # Запуск бота с использованием polling
+    application.run_polling()
 
 # Запуск программы
 if __name__ == '__main__':
-    import asyncio
-    asyncio.run(main())
+    main()
