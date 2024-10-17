@@ -44,6 +44,9 @@ async def main():
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(button))
 
+    # Инициализация приложения
+    await application.initialize()
+
     # Запуск бота
     await application.start()
     await application.idle()
