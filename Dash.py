@@ -59,7 +59,7 @@ async def button(update: Update, context):
 
 # Основная функция запуска бота
 def main():
-    application = ApplicationBuilder().token("YOUR_TELEGRAM_BOT_TOKEN").build()
+    application = ApplicationBuilder().token("7836847076:AAHVcgjHmMErXbyUIcqt__PpceYyHfraoi8").build()
 
     # Обработчики команд
     application.add_handler(CommandHandler("start", start))
