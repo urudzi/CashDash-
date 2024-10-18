@@ -11,12 +11,25 @@ registration_link = "https://1warlo.top/casino/list?open=register&p=7paw"
 
 # Функция для старта бота и приветствия
 async def start(update: Update, context):
-    keyboard = [
-        [InlineKeyboardButton("🔗 Ссылка на регистрацию", callback_data='registration_menu')],
-        [InlineKeyboardButton("🎁 Генерация промокода", callback_data='promo_menu')]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("💰 Привет! Я бот CashDASH. Я помогу тебе заработать! 💸", reply_markup=reply_markup)
+    # Проверяем, пришло ли сообщение как результат команды или через callback
+    if update.message:
+        # Если сообщение пришло через команду
+        chat_id = update.message.chat_id
+        keyboard = [
+            [InlineKeyboardButton("🔗 Ссылка на регистрацию", callback_data='registration_menu')],
+            [InlineKeyboardButton("🎁 Генерация промокода", callback_data='promo_menu')]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await update.message.reply_text("💰 Привет! Я бот CashDASH. Я помогу тебе заработать! 💸", reply_markup=reply_markup)
+    elif update.callback_query:
+        # Если сообщение пришло через нажатие кнопки
+        query = update.callback_query
+        keyboard = [
+            [InlineKeyboardButton("🔗 Ссылка на регистрацию", callback_data='registration_menu')],
+            [InlineKeyboardButton("🎁 Генерация промокода", callback_data='promo_menu')]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(text="💰 Привет! Я бот CashDASH. Я помогу тебе заработать! 💸", reply_markup=reply_markup)
 
 # Меню для ссылки на регистрацию
 async def registration_menu(update: Update, context):
@@ -63,16 +76,19 @@ async def button(update: Update, context):
         await query.edit_message_text(text=f"🔗 Твоя уникальная ссылка для регистрации: [{registration_link}](https://{registration_link})", reply_markup=reply_markup, parse_mode="Markdown")
 
     elif query.data == 'promo':
-        # Анимация генерации промокода
+        # Анимация генерации промокода с случайными шагами
         await query.edit_message_text(text="🎲 Идет генерация... 0%")
-
+        
         loading_time = random.randint(7, 15)  # Случайное время между 7 и 15 секундами
+        current_progress = 0  # Текущий прогресс
         progress_bar_length = 10  # Длина прогресс-бара
 
-        for i in range(1, 101, 1):  # Шаг в 1%
-            progress_bar = '|' * (i // 10) + '.' * (progress_bar_length - (i // 10))
-            await query.edit_message_text(text=f"🎲 Идет генерация... {i}% {progress_bar}")
-            time.sleep(loading_time / 50)  # Увеличено время задержки
+        while current_progress < 100:
+            step = random.randint(1, 20)  # Случайный шаг от 1% до 20%
+            current_progress = min(current_progress + step, 100)  # Обновляем прогресс, но не больше 100%
+            progress_bar = '|' * (current_progress // 10) + '.' * (progress_bar_length - (current_progress // 10))
+            await query.edit_message_text(text=f"🎲 Идет генерация... {current_progress}% {progress_bar}")
+            time.sleep(loading_time / 10)  # Задержка между обновлениями
 
         promo_code = random.choice(promo_codes)  # Случайно выбираем промокод
         keyboard = [[InlineKeyboardButton("🏠 Главное меню", callback_data='main_menu')]]
